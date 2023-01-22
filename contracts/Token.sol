@@ -24,5 +24,7 @@ contract Token {
         symbol = args._symbol;
         decimals = args._decimals;
         totalSupply = args._totalSupply * (10**decimals); // << in decimals
+        // ! Assign total supply to deployer
+        balanceOf[msg.sender] = totalSupply;
     }
 }
