@@ -17,6 +17,8 @@ contract Token {
     uint256 public decimals;
     uint256 public totalSupply;
 
+    // Track Balance
+    mapping(address => uint256) public balanceOf;
     constructor(DeploymentArgs memory args) {
         name = args._name;
         symbol = args._symbol;
