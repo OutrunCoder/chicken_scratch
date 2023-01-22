@@ -5,33 +5,46 @@ const parseTokenSupply = (nString: string) => {
   return ethers.utils.parseUnits(nString.toString(), 'ether');
 };
 
-describe('Token', () => {
+describe('Token:', () => {
   let token: any;
+
+  const name: string = 'Scratch';
+  const symbol: string = 'SCRATCH';
+  const decimals: number = 18;
+  const totalSupply: number = 1000000;
 
   beforeEach(async() => {
     const TokenContract = await ethers.getContractFactory('Token');
     token = await TokenContract.deploy({
-      _name: 'Scratch',
-      _symbol: "SCRATCH",
-      _decimals: 18,
-      _totalSupply: 1000000
+      _name: name,
+      _symbol: symbol,
+      _decimals: decimals,
+      _totalSupply: totalSupply
     });
   });
 
-  it('Has correct name', async () => {
-    expect(await token.name()).to.equal('Scratch');
+  describe('Deployment:', () => {
+    it('Has correct name', async () => {
+      expect(await token.name()).to.equal(name);
+    });
+  
+    it ('Has correct symbol', async () => {
+      expect(await token.symbol()).to.equal(symbol);
+    });
+  
+    it ('Has correct decimals', async () => {
+      expect(await token.decimals()).to.equal(decimals);
+    });
+  
+    it ('Has correct total Supply', async () => {
+      expect(await token.totalSupply()).to.equal(parseTokenSupply(totalSupply.toString()));
+    });
   });
 
-  it ('Has correct symbol', async () => {
-    expect(await token.symbol()).to.equal('SCRATCH');
-  });
+  // Describe Spending:
 
-  it ('Has correct decimals', async () => {
-    expect(await token.decimals()).to.equal('18');
-  });
+  // Describe approving:
 
-  it ('Has correct total Supply', async () => {
-    // const supplyLimit = parseTokenSupply('1000000');
-    expect(await token.totalSupply()).to.equal(parseTokenSupply('1000000'));
-  });
+  // Describe ...
+
 });
