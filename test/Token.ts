@@ -6,12 +6,14 @@ const parseTokenSupply = (nString: string) => {
 };
 
 describe('Token:', () => {
-  let token: any;
-
   const name: string = 'Scratch';
   const symbol: string = 'SCRATCH';
   const decimals: number = 18;
   const totalSupply: number = 1000000;
+
+  let token: any;
+  let accounts: any;
+  let deployer: any;
 
   beforeEach(async() => {
     const TokenContract = await ethers.getContractFactory('Token');
@@ -21,6 +23,11 @@ describe('Token:', () => {
       _decimals: decimals,
       _totalSupply: totalSupply
     });
+
+    // ACCOUNTS
+    accounts = await ethers.getSigners();
+    // DEPLOYER
+    deployer = accounts[0];
   });
 
   describe('Deployment:', () => {
@@ -38,6 +45,12 @@ describe('Token:', () => {
   
     it ('Has correct total Supply', async () => {
       expect(await token.totalSupply()).to.equal(parseTokenSupply(totalSupply.toString()));
+    });
+
+    //
+
+    it ('Assigns total supply to deployer', async () => {
+      expect(await token.balanceOf(deployer.address)).to.equal(parseTokenSupply(totalSupply.toString()));
     });
   });
 
