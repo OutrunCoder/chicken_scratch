@@ -9,7 +9,12 @@ async function main(): Promise<void> {
   const Contract = await ethers.getContractFactory(DEPLOYMENT_TARGET);
 
   // - Deploy contract
-  const migrated = await Contract.deploy();
+  const migrated = await Contract.deploy({
+    _name: 'Scratch',
+    _symbol: "SCRATCH",
+    _decimals: 18,
+    _totalSupply: 1000000
+  });
   await migrated.deployed();
 
   // - Print result

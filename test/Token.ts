@@ -11,7 +11,12 @@ describe('Token', () => {
   beforeEach(async() => {
     // Fetch token
     const TokenContract = await ethers.getContractFactory('Token');
-    token = await TokenContract.deploy();
+    token = await TokenContract.deploy({
+      _name: 'Scratch',
+      _symbol: "SCRATCH",
+      _decimals: 18,
+      _totalSupply: 1000000
+    });
   });
 
   it('Has correct name', async () => {
