@@ -2,14 +2,19 @@ import { ethers } from "hardhat";
 import { expect } from 'chai';
 
 describe('Token', () => {
-  it('Has a name', async () => {
-    // Check that name is correct
+  let token: any;
+
+  beforeEach(async() => {
     // Fetch token
     const TokenContract = await ethers.getContractFactory('Token');
-    let token = await TokenContract.deploy();
-    // Read name
-    const name = await token.name();
-    // validate
-    expect(name).to.equal('Scratch');
+    token = await TokenContract.deploy();
+  });
+
+  it('Has correct name', async () => {
+    expect(await token.name()).to.equal('Scratch');
+  });
+
+  it ('Has correct symbol', async () => {
+    expect(await token.symbol()).to.equal('SCRATCH');
   });
 });
