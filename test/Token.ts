@@ -9,7 +9,6 @@ describe('Token', () => {
   let token: any;
 
   beforeEach(async() => {
-    // Fetch token
     const TokenContract = await ethers.getContractFactory('Token');
     token = await TokenContract.deploy({
       _name: 'Scratch',
