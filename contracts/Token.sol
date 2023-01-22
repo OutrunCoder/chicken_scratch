@@ -6,4 +6,6 @@ import "hardhat/console.sol";
 contract Token {
     string public name = "Scratch";
     string public symbol = "SCRATCH";
+    uint256 public decimals = 18;
+    uint256 public totalSupply = 1000000 * (10**decimals);
 }
