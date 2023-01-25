@@ -66,10 +66,12 @@ describe('Token:', () => {
     });
   });
 
-  describe('Sending Token', () => {
-    let transferAmount;
-
-    it('Transfers token balances', (async () => {
+  describe('Sending Tokens', () => {
+    let transferAmount: any;
+    let transaction: any;
+    let result: any;
+    
+    beforeEach(async () => {
       console.log(`\n\n>> BEFORE:`);
       console.table({
         deployer: {
@@ -84,10 +86,12 @@ describe('Token:', () => {
 
       // TOKENS EXCHANGE
       transferAmount = TokensToWei('100');
-      await token.connect(deployer).transfer(receiverAddress, transferAmount);
+      transaction = await token.connect(deployer).transfer(receiverAddress, transferAmount);
+      result = transaction.wait();
       console.log('\n\n<<< TOKENS EXCHANGED ! <<<');
-      
-      
+    });
+
+    it('Transfers token balances', (async () => {
       // Check balances after
       const deployerHasRemaining = await token.balanceOf(deployerAddress);
       const receiverHas = await token.balanceOf(receiverAddress);
