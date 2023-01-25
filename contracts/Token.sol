@@ -19,6 +19,7 @@ contract Token {
 
     // Track Balance
     mapping(address => uint256) public balanceOf;
+
     constructor(DeploymentArgs memory args) {
         name = args._name;
         symbol = args._symbol;
@@ -26,5 +27,13 @@ contract Token {
         totalSupply = args._totalSupply * (10**decimals); // << in decimals
         // ! Assign total supply to deployer
         balanceOf[msg.sender] = totalSupply;
+    }
+
+    // Send Tokens
+    function transfer(address _to, uint256 _value) public returns(bool success) {
+        // Deduct token balance from sender
+        balanceOf[msg.sender] = balanceOf[msg.sender] - _value;
+        // Credit tokens to receiver
+        balanceOf[_to] = balanceOf[_to] + _value;
     }
 }

@@ -1,8 +1,13 @@
 import { ethers } from "hardhat";
 import { expect } from 'chai';
 
-const parseTokenSupply = (nString: string) => {
+const TokensToWei = (nString: string) => {
+  // 1 => 1000000000000000000
   return ethers.utils.parseUnits(nString.toString(), 'ether');
+};
+const WeiToTokens = (bigNumber: any) => {
+  // 1000000000000000000 => 1  
+  return ethers.utils.formatEther(bigNumber);
 };
 
 describe('Token:', () => {
@@ -14,6 +19,9 @@ describe('Token:', () => {
   let token: any;
   let accounts: any;
   let deployer: any;
+  let deployerAddress: string;
+  let receiver: any;
+  let receiverAddress: string;
 
   beforeEach(async() => {
     const TokenContract = await ethers.getContractFactory('Token');
@@ -28,6 +36,10 @@ describe('Token:', () => {
     accounts = await ethers.getSigners();
     // DEPLOYER
     deployer = accounts[0];
+    deployerAddress = deployer.address;
+    // RECEIVER
+    receiver = accounts[1];
+    receiverAddress = receiver.address;
   });
 
   describe('Deployment:', () => {
@@ -44,17 +56,59 @@ describe('Token:', () => {
     });
   
     it ('Has correct total Supply', async () => {
-      expect(await token.totalSupply()).to.equal(parseTokenSupply(totalSupply.toString()));
+      expect(await token.totalSupply()).to.equal(TokensToWei(totalSupply.toString()));
     });
 
     //
 
     it ('Assigns total supply to deployer', async () => {
-      expect(await token.balanceOf(deployer.address)).to.equal(parseTokenSupply(totalSupply.toString()));
+      expect(await token.balanceOf(deployerAddress)).to.equal(TokensToWei(totalSupply.toString()));
     });
   });
 
-  // Describe Spending:
+  describe('Sending Token', () => {
+    let transferAmount;
+
+    it('Transfers token balances', (async () => {
+      console.log(`\n\n>> BEFORE:`);
+      console.table({
+        deployer: {
+          // address: deployerAddress,
+          balance: await WeiToTokens(await token.balanceOf(deployerAddress))
+        },
+        receiver: {
+          // address: receiverAddress,
+          balance: await WeiToTokens(await token.balanceOf(receiverAddress))
+        }
+      });
+
+      // TOKENS EXCHANGE
+      transferAmount = TokensToWei('100');
+      await token.connect(deployer).transfer(receiverAddress, transferAmount);
+      console.log('\n\n<<< TOKENS EXCHANGED ! <<<');
+      
+      
+      // Check balances after
+      const deployerHasRemaining = await token.balanceOf(deployerAddress);
+      const receiverHas = await token.balanceOf(receiverAddress);
+      console.log(`\n\n>> AFTER:`);
+      console.table({
+        deployer: {
+          // address: deployerAddress,
+          balance: WeiToTokens(deployerHasRemaining)
+        },
+        receiver: {
+          // address: receiverAddress,
+          balance: WeiToTokens(receiverHas)
+        }
+      });
+      
+      //Ensure that tokens were transfered (balances changed)
+      const remainingExpected = TokensToWei('999900');
+      expect(deployerHasRemaining).to.equal(remainingExpected);
+      expect(receiverHas).to.equal(transferAmount);
+    }));
+  });
 
   // Describe approving:
 
