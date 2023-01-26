@@ -1,4 +1,4 @@
-import { ethers } from "hardhat";
+import { ethers } from 'hardhat';
 import { expect } from 'chai';
 
 const TokensToWei = (nString: string) => {
@@ -204,4 +204,29 @@ describe('Token:', () => {
     });
   });
 
+  describe('Delegated Token Transfers', () => {
+    
+    beforeEach(async () => {
+      transferAmount = TokensToWei('104');
+      
+      transaction = await token.connect(deployer).approve(exchangeAddress, transferAmount);
+      result = await transaction.wait();
+    });
+
+    describe('Success', () => {
+      beforeEach(async () => {
+        transaction = await token.connect(exchange).transferFrom(deployerAddress, receiverAddress, transferAmount);
+        result = await transaction.wait();
+      });
+
+      it('Transfers token balances', async() => {
+        expect(await token.balanceOf(deployerAddress)).to.be.equal(TokensToWei('999896'));
+        expect(await token.balanceOf(receiverAddress)).to.be.equal(transferAmount);
+      });
+    });
+
+    // describe('Exceptions', () => {
+
+    // });
+  });
 });
