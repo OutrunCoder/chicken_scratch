@@ -71,61 +71,74 @@ describe('Token:', () => {
     let transaction: any;
     let result: any;
     
-    beforeEach(async () => {
-      // console.log(`\n\n>> BEFORE:`);
-      // console.table({
-      //   deployer: {
-      //     // address: deployerAddress,
-      //     balance: await WeiToTokens(await token.balanceOf(deployerAddress))
-      //   },
-      //   receiver: {
-      //     // address: receiverAddress,
-      //     balance: await WeiToTokens(await token.balanceOf(receiverAddress))
-      //   }
-      // });
-
-      // TOKENS EXCHANGE
-      transferAmount = TokensToWei('100');
-      transaction = await token.connect(deployer).transfer(receiverAddress, transferAmount);
-      result = await transaction.wait();
-      console.log('\n\n<<< TOKENS EXCHANGED ! <<<');
+    describe('Success', () => {
+      beforeEach(async () => {
+        // console.log(`\n\n>> BEFORE:`);
+        // console.table({
+        //   deployer: {
+        //     // address: deployerAddress,
+        //     balance: await WeiToTokens(await token.balanceOf(deployerAddress))
+        //   },
+        //   receiver: {
+        //     // address: receiverAddress,
+        //     balance: await WeiToTokens(await token.balanceOf(receiverAddress))
+        //   }
+        // });
+    
+        // TOKENS EXCHANGE
+        transferAmount = TokensToWei('100');
+        transaction = await token.connect(deployer).transfer(receiverAddress, transferAmount);
+        result = await transaction.wait();
+        console.log('\n\n<<< TOKENS EXCHANGED ! <<<');
+      });
+    
+      it('Transfers token balances', (async () => {
+        // Check balances after
+        const deployerHasRemaining = await token.balanceOf(deployerAddress);
+        const receiverHas = await token.balanceOf(receiverAddress);
+        console.log(`\n\n>> AFTER:`);
+        console.table({
+          deployer: {
+            // address: deployerAddress,
+            balance: WeiToTokens(deployerHasRemaining)
+          },
+          receiver: {
+            // address: receiverAddress,
+            balance: WeiToTokens(receiverHas)
+          }
+        });
+        
+        //Ensure that tokens were transfered (balances changed)
+        const remainingExpected = TokensToWei('999900');
+        expect(deployerHasRemaining).to.equal(remainingExpected);
+        expect(receiverHas).to.equal(transferAmount);
+      }));
+    
+      it('Emits a Transfer event', async () => {
+        const events = result.events;
+        const foundTransferEvents = events.filter((e: any) => e.event === 'Transfer');
+    
+        // console.log('>> FOUND_XFER_EVENTS:', foundTransferEvents);
+        
+        // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+        expect(foundTransferEvents).to.not.be.empty
+        //
+        const eventArgs = foundTransferEvents[0].args;
+        expect(eventArgs.from).to.equal(deployerAddress);
+        expect(eventArgs.to).to.equal(receiverAddress);
+        expect(eventArgs.value).to.equal(transferAmount);
+      });
     });
-
-    it('Transfers token balances', (async () => {
-      // Check balances after
-      const deployerHasRemaining = await token.balanceOf(deployerAddress);
-      const receiverHas = await token.balanceOf(receiverAddress);
-      console.log(`\n\n>> AFTER:`);
-      console.table({
-        deployer: {
-          // address: deployerAddress,
-          balance: WeiToTokens(deployerHasRemaining)
-        },
-        receiver: {
-          // address: receiverAddress,
-          balance: WeiToTokens(receiverHas)
-        }
+      
+    describe('Exceptions', () => {
+      it('rejects insufficient balances', async() => {
+        // Transfer more tokens than deployer has - 10M
+        transferAmount = TokensToWei('100000000'); // INVALID AMOUNT
+        await expect(token.connect(deployer).transfer(receiverAddress, transferAmount)).to.be.reverted;
+        
+        console.log('\n\n<<< EXCESSIVE TOKENS REQ SENT ! <<<\n', transaction);
       });
       
-      //Ensure that tokens were transfered (balances changed)
-      const remainingExpected = TokensToWei('999900');
-      expect(deployerHasRemaining).to.equal(remainingExpected);
-      expect(receiverHas).to.equal(transferAmount);
-    }));
-
-    it('Emits a Transfer event', async () => {
-      const events = result.events;
-      const foundTransferEvents = events.filter((e: any) => e.event === 'Transfer');
-
-      // console.log('>> FOUND_XFER_EVENTS:', foundTransferEvents);
-      
-      // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-      expect(foundTransferEvents).to.not.be.empty
-      //
-      const eventArgs = foundTransferEvents[0].args;
-      expect(eventArgs.from).to.equal(deployerAddress);
-      expect(eventArgs.to).to.equal(receiverAddress);
-      expect(eventArgs.value).to.equal(transferAmount);
     });
   });
 
