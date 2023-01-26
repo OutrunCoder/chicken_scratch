@@ -136,9 +136,17 @@ describe('Token:', () => {
         transferAmount = TokensToWei('100000000'); // INVALID AMOUNT
         await expect(token.connect(deployer).transfer(receiverAddress, transferAmount)).to.be.reverted;
         
-        console.log('\n\n<<< EXCESSIVE TOKENS REQ SENT ! <<<\n', transaction);
+        console.log('\n\n<<< EXCESSIVE TOKENS REQ SENT ! <<<\n');
       });
       
+      // ! Rejects Invalid receiver
+      it('rejects invalid recipient', async() => {
+        transferAmount = TokensToWei('100'); // VALID AMOUNT
+        const bogusAddress = '0x0000000000000000000000000000000000000000';
+        await expect(token.connect(deployer).transfer(bogusAddress, transferAmount)).to.be.reverted;
+        
+        console.log('\n\n<<< INVALID RECIPIENT REQ SENT ! <<<\n');
+      });
     });
   });
 
