@@ -16,12 +16,22 @@ describe('Token:', () => {
   const decimals: number = 18;
   const totalSupply: number = 1000000;
 
+  //
+
   let token: any;
   let accounts: any;
+  const bogusAddress = '0x0000000000000000000000000000000000000000';
+  //
   let deployer: any;
   let deployerAddress: string;
+  //
   let receiver: any;
   let receiverAddress: string;
+  //
+
+  let transferAmount: any;
+  let transaction: any;
+  let result: any;
 
   beforeEach(async() => {
     const TokenContract = await ethers.getContractFactory('Token');
@@ -34,11 +44,13 @@ describe('Token:', () => {
 
     // ACCOUNTS
     accounts = await ethers.getSigners();
-    // DEPLOYER
-    deployer = accounts[0];
+    // DESTRUCTURE ACTORS
+    [
+      deployer,
+      receiver,
+    ] = accounts;
+    // COLLECT ACTOR ADDRESSES
     deployerAddress = deployer.address;
-    // RECEIVER
-    receiver = accounts[1];
     receiverAddress = receiver.address;
   });
 
@@ -67,10 +79,6 @@ describe('Token:', () => {
   });
 
   describe('Sending Tokens', () => {
-    let transferAmount: any;
-    let transaction: any;
-    let result: any;
-    
     describe('Success', () => {
       beforeEach(async () => {
         // console.log(`\n\n>> BEFORE:`);
@@ -86,7 +94,7 @@ describe('Token:', () => {
         // });
     
         // TOKENS EXCHANGE
-        transferAmount = TokensToWei('100');
+        transferAmount = TokensToWei('102');
         transaction = await token.connect(deployer).transfer(receiverAddress, transferAmount);
         result = await transaction.wait();
         console.log('\n\n<<< TOKENS EXCHANGED ! <<<');
@@ -109,12 +117,12 @@ describe('Token:', () => {
         });
         
         //Ensure that tokens were transfered (balances changed)
-        const remainingExpected = TokensToWei('999900');
+        const remainingExpected = TokensToWei('999898');
         expect(deployerHasRemaining).to.equal(remainingExpected);
         expect(receiverHas).to.equal(transferAmount);
       }));
     
-      it('Emits a Transfer event', async () => {
+      it('Emits a "Transfer" event', async () => {
         const events = result.events;
         const foundTransferEvents = events.filter((e: any) => e.event === 'Transfer');
     
@@ -141,8 +149,7 @@ describe('Token:', () => {
       
       // ! Rejects Invalid receiver
       it('rejects invalid recipient', async() => {
-        transferAmount = TokensToWei('100'); // VALID AMOUNT
-        const bogusAddress = '0x0000000000000000000000000000000000000000';
+        transferAmount = TokensToWei('102'); // VALID AMOUNT
         await expect(token.connect(deployer).transfer(bogusAddress, transferAmount)).to.be.reverted;
         
         console.log('\n\n<<< INVALID RECIPIENT REQ SENT ! <<<\n');

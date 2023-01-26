@@ -36,7 +36,10 @@ contract Token {
     }
 
     // Send Tokens
-    function transfer(address _to, uint256 _value) public returns(bool success) {
+    function transfer(address _to, uint256 _value)
+        public
+        returns(bool success)
+    {
         bool userHasEnoughToSend;
 
         // ! Verify that sender has enough tokens to spend
