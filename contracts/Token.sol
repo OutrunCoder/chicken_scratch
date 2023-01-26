@@ -55,16 +55,26 @@ contract Token {
         // ! Verify that sender has enough tokens to spend
         userHasEnoughToSend = balanceOf[msg.sender] >= _value;
         require(userHasEnoughToSend);
+        
+        _transfer(msg.sender, _to, _value);
+        
+        return true;
+    }
+
+    function _transfer(
+        address _from,
+        address _to,
+        uint256 _value
+    ) internal {
         // ! Reject invalid recipient
         require(_to != address(0));
 
         // Deduct token balance from sender
-        balanceOf[msg.sender] = balanceOf[msg.sender] - _value;
+        balanceOf[_from] = balanceOf[_from] - _value;
         // Credit tokens to receiver
         balanceOf[_to] = balanceOf[_to] + _value;
 
         emit Transfer(msg.sender, _to, _value);
-        return true;
     }
 
     // APPROVAL
