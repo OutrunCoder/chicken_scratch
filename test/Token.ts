@@ -10,6 +10,19 @@ const WeiToTokens = (bigNumber: any) => {
   return ethers.utils.formatEther(bigNumber);
 };
 
+const testTransferEvent = (testRequirements: any) => {
+  const { transferEvents, fromAddress, toAddress, transferAmount } = testRequirements;
+  // console.log('>> FOUND_XFER_EVENTS:', transferEvents);
+        
+  // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+  expect(transferEvents).to.not.be.empty
+  //
+  const eventArgs = transferEvents[0].args;
+  expect(eventArgs.from).to.equal(fromAddress);
+  expect(eventArgs.to).to.equal(toAddress);
+  expect(eventArgs.value).to.equal(transferAmount);
+};
+
 describe('Token:', () => {
   const name: string = 'Scratch';
   const symbol: string = 'SCRATCH';
@@ -127,21 +140,17 @@ describe('Token:', () => {
         expect(deployerHasRemaining).to.equal(remainingExpected);
         expect(receiverHas).to.equal(transferAmount);
       }));
-    
-      // TODO - ABSTRACT THIS <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
       it('Emits a "Transfer" event', async () => {
         const events = result.events;
-        const foundTransferEvents = events.filter((e: any) => e.event === 'Transfer');
+        const transferEvents = events.filter((e: any) => e.event === 'Transfer');
     
-        // console.log('>> FOUND_XFER_EVENTS:', foundTransferEvents);
-        
-        // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-        expect(foundTransferEvents).to.not.be.empty
-        //
-        const eventArgs = foundTransferEvents[0].args;
-        expect(eventArgs.from).to.equal(deployerAddress);
-        expect(eventArgs.to).to.equal(receiverAddress);
-        expect(eventArgs.value).to.equal(transferAmount);
+        testTransferEvent({
+          transferEvents,
+          fromAddress: deployerAddress,
+          toAddress: receiverAddress,
+          transferAmount
+        });
       });
     });
       
@@ -231,20 +240,16 @@ describe('Token:', () => {
         expect(await token.allowance(deployerAddress, exchangeAddress)).to.be.equal(0);
       });
 
-      // TODO - ABSTRACT THIS <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
       it('Emits a "Transfer" event', async () => {
         const events = result.events;
-        const foundTransferEvents = events.filter((e: any) => e.event === 'Transfer');
+        const transferEvents = events.filter((e: any) => e.event === 'Transfer');
     
-        // console.log('>> FOUND_XFER_EVENTS:', foundTransferEvents);
-        
-        // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-        expect(foundTransferEvents).to.not.be.empty
-        //
-        const eventArgs = foundTransferEvents[0].args;
-        expect(eventArgs.from).to.equal(deployerAddress);
-        expect(eventArgs.to).to.equal(receiverAddress);
-        expect(eventArgs.value).to.equal(transferAmount);
+        testTransferEvent({
+          transferEvents,
+          fromAddress: deployerAddress,
+          toAddress: receiverAddress,
+          transferAmount
+        });
       });
     });
 
