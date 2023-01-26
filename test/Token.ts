@@ -128,6 +128,7 @@ describe('Token:', () => {
         expect(receiverHas).to.equal(transferAmount);
       }));
     
+      // TODO - ABSTRACT THIS <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
       it('Emits a "Transfer" event', async () => {
         const events = result.events;
         const foundTransferEvents = events.filter((e: any) => e.event === 'Transfer');
@@ -207,6 +208,7 @@ describe('Token:', () => {
   describe('Delegated Token Transfers', () => {
     
     beforeEach(async () => {
+      // DEPLOYER APPROVES
       transferAmount = TokensToWei('104');
       
       transaction = await token.connect(deployer).approve(exchangeAddress, transferAmount);
@@ -215,6 +217,7 @@ describe('Token:', () => {
 
     describe('Success', () => {
       beforeEach(async () => {
+        // EXCHANGE TRANSFERS ON BEHALF
         transaction = await token.connect(exchange).transferFrom(deployerAddress, receiverAddress, transferAmount);
         result = await transaction.wait();
       });
@@ -223,10 +226,33 @@ describe('Token:', () => {
         expect(await token.balanceOf(deployerAddress)).to.be.equal(TokensToWei('999896'));
         expect(await token.balanceOf(receiverAddress)).to.be.equal(transferAmount);
       });
+
+      it('Resets the allowance', async() => {
+        expect(await token.allowance(deployerAddress, exchangeAddress)).to.be.equal(0);
+      });
+
+      // TODO - ABSTRACT THIS <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+      it('Emits a "Transfer" event', async () => {
+        const events = result.events;
+        const foundTransferEvents = events.filter((e: any) => e.event === 'Transfer');
+    
+        // console.log('>> FOUND_XFER_EVENTS:', foundTransferEvents);
+        
+        // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+        expect(foundTransferEvents).to.not.be.empty
+        //
+        const eventArgs = foundTransferEvents[0].args;
+        expect(eventArgs.from).to.equal(deployerAddress);
+        expect(eventArgs.to).to.equal(receiverAddress);
+        expect(eventArgs.value).to.equal(transferAmount);
+      });
     });
 
-    // describe('Exceptions', () => {
-
-    // });
+    describe('Exceptions', () => {
+      it('Rejects insufficient amounts', async () => {
+        const invalidAmount = TokensToWei('100000000');
+        await expect(token.connect(exchange).transferFrom(deployerAddress, receiverAddress, invalidAmount)).to.be.reverted;
+      })
+    });
   });
 });

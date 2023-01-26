@@ -74,7 +74,7 @@ contract Token {
         // Credit tokens to receiver
         balanceOf[_to] = balanceOf[_to] + _value;
 
-        emit Transfer(msg.sender, _to, _value);
+        emit Transfer(_from, _to, _value);
     }
 
     // APPROVAL
@@ -97,6 +97,15 @@ contract Token {
         uint256 _value
     ) public returns (bool success) {
 
+        // check has amount available
+        require(_value <= balanceOf[_from]);
+        // check approval - DO NOT transfer more than the approved value spec
+        require(_value <= allowance[_from][msg.sender]);
+
+        // RESET allowance incrementally
+        allowance[_from][msg.sender] = allowance[_from][msg.sender] - _value; 
+
+        // XFER
         _transfer(_from, _to, _value);
         return true;
     }
