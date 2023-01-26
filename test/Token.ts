@@ -28,6 +28,10 @@ describe('Token:', () => {
   let receiver: any;
   let receiverAddress: string;
   //
+  let exchange: any;
+  let exchangeAddress: string;
+
+  //
 
   let transferAmount: any;
   let transaction: any;
@@ -48,10 +52,12 @@ describe('Token:', () => {
     [
       deployer,
       receiver,
+      exchange
     ] = accounts;
     // COLLECT ACTOR ADDRESSES
     deployerAddress = deployer.address;
     receiverAddress = receiver.address;
+    exchangeAddress = exchange.address;
   });
 
   describe('Deployment:', () => {
@@ -157,8 +163,45 @@ describe('Token:', () => {
     });
   });
 
-  // Describe approving:
+  describe('Approving Tokens', () => {
+    let owner: string;
+    let spender: string;
+    
+    beforeEach(async () => {
+      owner = deployerAddress;
+      spender = exchangeAddress;
+      transferAmount = TokensToWei('103');
+      
+      transaction = await token.connect(deployer).approve(spender, transferAmount);
+      result = await transaction.wait();
+    });
+    
+    describe('Success', () => {
+      it('allocates an allowance for delegated token spending', async() => {
+        expect(await token.allowance(owner, spender)).to.equal(transferAmount);
+      });
 
-  // Describe ...
+      it('Emits an "Approval" event', async () => {
+        const events = result.events;
+        const foundApprovalEvents = events.filter((e: any) => e.event === 'Approval');
+    
+        // console.log('>> FOUND_XFER_EVENTS:', foundTransferEvents);
+        
+        // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+        expect(foundApprovalEvents).to.not.be.empty
+        //
+        const eventArgs = foundApprovalEvents[0].args;
+        expect(eventArgs.owner).to.equal(owner);
+        expect(eventArgs.spender).to.equal(spender);
+        expect(eventArgs.value).to.equal(transferAmount);
+      });
+    });
+    
+    describe('Exceptions', () => {
+      it('Rejects invalid spenders', async() => {
+        await expect(token.connect(deployer).approve(bogusAddress, transferAmount)).to.be.reverted;
+      });
+    });
+  });
 
 });
