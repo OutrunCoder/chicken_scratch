@@ -1,14 +1,6 @@
 import { ethers } from 'hardhat';
 import { expect } from 'chai';
-
-const TokensToWei = (nString: string) => {
-  // 1 => 1000000000000000000
-  return ethers.utils.parseUnits(nString.toString(), 'ether');
-};
-const WeiToTokens = (bigNumber: any) => {
-  // 1000000000000000000 => 1  
-  return ethers.utils.formatEther(bigNumber);
-};
+import Convert from '../utils/token-conversion';
 
 const testTransferEvent = (testRequirements: any) => {
   const { transferEvents, fromAddress, toAddress, transferAmount } = testRequirements;
@@ -87,13 +79,13 @@ describe('Token:', () => {
     });
   
     it ('Has correct total Supply', async () => {
-      expect(await token.totalSupply()).to.equal(TokensToWei(totalSupply.toString()));
+      expect(await token.totalSupply()).to.equal(Convert.TokensToWei(totalSupply.toString()));
     });
 
     //
 
     it ('Assigns total supply to deployer', async () => {
-      expect(await token.balanceOf(deployerAddress)).to.equal(TokensToWei(totalSupply.toString()));
+      expect(await token.balanceOf(deployerAddress)).to.equal(Convert.TokensToWei(totalSupply.toString()));
     });
   });
 
@@ -113,7 +105,7 @@ describe('Token:', () => {
         // });
     
         // TOKENS EXCHANGE
-        transferAmount = TokensToWei('102');
+        transferAmount = Convert.TokensToWei('102');
         transaction = await token.connect(deployer).transfer(receiverAddress, transferAmount);
         result = await transaction.wait();
         console.log('\n\n<<< TOKENS EXCHANGED ! <<<');
@@ -127,16 +119,16 @@ describe('Token:', () => {
         console.table({
           deployer: {
             // address: deployerAddress,
-            balance: WeiToTokens(deployerHasRemaining)
+            balance: Convert.WeiToTokens(deployerHasRemaining)
           },
           receiver: {
             // address: receiverAddress,
-            balance: WeiToTokens(receiverHas)
+            balance: Convert.WeiToTokens(receiverHas)
           }
         });
         
         //Ensure that tokens were transfered (balances changed)
-        const remainingExpected = TokensToWei('999898');
+        const remainingExpected = Convert.TokensToWei('999898');
         expect(deployerHasRemaining).to.equal(remainingExpected);
         expect(receiverHas).to.equal(transferAmount);
       }));
@@ -157,7 +149,7 @@ describe('Token:', () => {
     describe('Exceptions', () => {
       it('rejects insufficient balances', async() => {
         // Transfer more tokens than deployer has - 10M
-        transferAmount = TokensToWei('100000000'); // INVALID AMOUNT
+        transferAmount = Convert.TokensToWei('100000000'); // INVALID AMOUNT
         await expect(token.connect(deployer).transfer(receiverAddress, transferAmount)).to.be.reverted;
         
         console.log('\n\n<<< EXCESSIVE TOKENS REQ SENT ! <<<\n');
@@ -165,7 +157,7 @@ describe('Token:', () => {
       
       // ! Rejects Invalid receiver
       it('rejects invalid recipient', async() => {
-        transferAmount = TokensToWei('102'); // VALID AMOUNT
+        transferAmount = Convert.TokensToWei('102'); // VALID AMOUNT
         await expect(token.connect(deployer).transfer(bogusAddress, transferAmount)).to.be.reverted;
         
         console.log('\n\n<<< INVALID RECIPIENT REQ SENT ! <<<\n');
@@ -180,7 +172,7 @@ describe('Token:', () => {
     beforeEach(async () => {
       owner = deployerAddress;
       spender = exchangeAddress;
-      transferAmount = TokensToWei('103');
+      transferAmount = Convert.TokensToWei('103');
       
       transaction = await token.connect(deployer).approve(spender, transferAmount);
       result = await transaction.wait();
@@ -218,7 +210,7 @@ describe('Token:', () => {
     
     beforeEach(async () => {
       // DEPLOYER APPROVES
-      transferAmount = TokensToWei('104');
+      transferAmount = Convert.TokensToWei('104');
       
       transaction = await token.connect(deployer).approve(exchangeAddress, transferAmount);
       result = await transaction.wait();
@@ -232,7 +224,7 @@ describe('Token:', () => {
       });
 
       it('Transfers token balances', async() => {
-        expect(await token.balanceOf(deployerAddress)).to.be.equal(TokensToWei('999896'));
+        expect(await token.balanceOf(deployerAddress)).to.be.equal(Convert.TokensToWei('999896'));
         expect(await token.balanceOf(receiverAddress)).to.be.equal(transferAmount);
       });
 
@@ -255,7 +247,7 @@ describe('Token:', () => {
 
     describe('Exceptions', () => {
       it('Rejects insufficient amounts', async () => {
-        const invalidAmount = TokensToWei('100000000');
+        const invalidAmount = Convert.TokensToWei('100000000');
         await expect(token.connect(exchange).transferFrom(deployerAddress, receiverAddress, invalidAmount)).to.be.reverted;
       })
     });
