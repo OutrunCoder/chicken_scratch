@@ -1,19 +1,9 @@
 import { ethers } from 'hardhat';
 import { expect } from 'chai';
 import Convert from '../utils/token-conversion';
+import { testTransferEvent } from './utils/test-transfer-event';
 
-const testTransferEvent = (testRequirements: any) => {
-  const { transferEvents, fromAddress, toAddress, transferAmount } = testRequirements;
-  // console.log('>> FOUND_XFER_EVENTS:', transferEvents);
-        
-  // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-  expect(transferEvents).to.not.be.empty
-  //
-  const eventArgs = transferEvents[0].args;
-  expect(eventArgs.from).to.equal(fromAddress);
-  expect(eventArgs.to).to.equal(toAddress);
-  expect(eventArgs.value).to.equal(transferAmount);
-};
+
 
 describe('Token:', () => {
   const name: string = 'Scratch';
@@ -135,14 +125,17 @@ describe('Token:', () => {
 
       it('Emits a "Transfer" event', async () => {
         const events = result.events;
-        const transferEvents = events.filter((e: any) => e.event === 'Transfer');
-    
-        testTransferEvent({
+        const transferEvents = events.filter((e: any) => e.event === 'Transfer');        
+
+        const transferIsValid = testTransferEvent({
           transferEvents,
           fromAddress: deployerAddress,
           toAddress: receiverAddress,
           transferAmount
         });
+
+        // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+        expect(transferIsValid).to.be.true;
       });
     });
       
@@ -236,12 +229,15 @@ describe('Token:', () => {
         const events = result.events;
         const transferEvents = events.filter((e: any) => e.event === 'Transfer');
     
-        testTransferEvent({
+        const transferIsValid = testTransferEvent({
           transferEvents,
           fromAddress: deployerAddress,
           toAddress: receiverAddress,
           transferAmount
         });
+
+        // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+        expect(transferIsValid).to.be.true;
       });
     });
 
