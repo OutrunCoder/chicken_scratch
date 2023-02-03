@@ -4,7 +4,7 @@ import * as dotenv from 'dotenv' // see https://github.com/motdotla/dotenv#how-d
 dotenv.config()
 
 const config: HardhatUserConfig = {
-  solidity: "0.8.17",
+  solidity: "0.8.9",
   networks: {
     localhost: {}
   }
