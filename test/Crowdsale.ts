@@ -13,15 +13,15 @@ describe('Crowdsale', () => {
   let deployer: any;
   let user1: any;
   //
-  let deployerAddress: string;
+  // let deployerAddress: string;
   let user1Address: string;
   let tknContractAddress: string;
   let crwdContractAddress: string;
   
   beforeEach(async() => {
     // Load contracts
-    const crwdSaleContractFactory = await ethers.getContractFactory('Crowdsale');
     const tknContractFactory = await ethers.getContractFactory('Token');
+    const crwdSaleContractFactory = await ethers.getContractFactory('Crowdsale');
 
     // A
     tokenContract = await tknContractFactory.deploy({
@@ -34,7 +34,8 @@ describe('Crowdsale', () => {
 
     // B
     crowdsaleContract = await crwdSaleContractFactory.deploy({
-      _tokenContractAddress: tokenContract.address
+      _tokenContractAddress: tknContractAddress,
+      _price: Convert.TokensToWei('1')
     });
     crwdContractAddress = crowdsaleContract.address;
 
@@ -45,6 +46,7 @@ describe('Crowdsale', () => {
       deployer,
       user1
     ] = accounts;
+    // deployerAddress = deployer.address;
     user1Address = user1.address;
 
     // xfer tokens to ICO
@@ -68,15 +70,40 @@ describe('Crowdsale', () => {
   });
 
   describe('Buying Tokens', () => {
+    let trx: any;
+    let trxResult: any;
     const purchaseQty = Convert.TokensToWei('10');
 
-    describe('success', () => {
+    describe('Success', () => {
+      beforeEach(async() => {
+        trx = await crowdsaleContract.connect(user1).buyTokens(purchaseQty, { value: purchaseQty });
+        trxResult = await trx.wait();
+      });
+
       it('transfers tokens', async () => {
-        const trx = await crowdsaleContract.connect(user1).buyTokens(purchaseQty);
-        await trx.wait();
 
         expect(await tokenContract.balanceOf(crwdContractAddress)).of.equal(Convert.TokensToWei('999990'));
         expect(await tokenContract.balanceOf(user1Address)).of.equal(purchaseQty);
+      });
+
+      it('updates contracts ether balance', async () => {
+        const crwdSaleContractEthersBalance = await ethers.provider.getBalance(crwdContractAddress);
+        expect(crwdSaleContractEthersBalance).to.equal(purchaseQty);
+      })
+
+      it('emits a purchase event', async() => {
+        console.log('>> PURCHASE:\n', trxResult.events[1].args);
+        // DOCS - https://hardhat.org/hardhat-chai-matchers/docs/reference#.emit
+        await expect(trx).to.emit(crowdsaleContract, 'TokenPurchase')
+          .withArgs(purchaseQty, user1Address);
+      });
+    });
+
+    describe('Failure', () => {
+      it('rejects insufficent ETH', async () => {
+        const badTrx = crowdsaleContract.connect(user1).buyTokens(purchaseQty, { value: 0 });
+        // TODO - check for error message confirmation.
+        await expect(badTrx).to.be.reverted;
       });
     });
   });
