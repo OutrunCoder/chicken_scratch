@@ -4,10 +4,19 @@ import { expect } from 'chai';
 
 describe('Crowdsale', () => {
   let crowdsaleContract: any;
+  let tokenContract: any;
   
   beforeEach(async() => {
-    const contractFactory = await ethers.getContractFactory('Crowdsale');
-    crowdsaleContract = await contractFactory.deploy();
+    const crwdSaleContractFactory = await ethers.getContractFactory('Crowdsale');
+    const tknContractFactory = await ethers.getContractFactory('Token');
+
+    tokenContract = await tknContractFactory.deploy({
+      _name: 'Chicken Scratch',
+      _symbol: 'SCRATCH',
+      _decimals: 18,
+      _totalSupply: 1000000
+    });
+
   });
 
   describe('Deployment', () => {
