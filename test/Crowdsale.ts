@@ -17,11 +17,18 @@ describe('Crowdsale', () => {
       _totalSupply: 1000000
     });
 
+    crowdsaleContract = await crwdSaleContractFactory.deploy({
+      _tokenContractAddress: tokenContract.address
+    });
   });
 
   describe('Deployment', () => {
     it('Has correct name', async() => {
       expect(await crowdsaleContract.name()).to.equal('Crowdsale');
+    });
+
+    it('Returns the Token address', async () => {
+      expect(await crowdsaleContract.tknContractAddress()).to.equal(tokenContract.address);
     });
   });
 })
