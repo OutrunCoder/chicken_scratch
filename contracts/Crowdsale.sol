@@ -16,5 +16,8 @@ contract Crowdsale {
     // Integrate tknContract via address assignment
     tokenContract = args._tokenContractAddress;
   }
+
+  function buyTokens(uint256 _amount) public {
+    tokenContract.transfer(msg.sender, _amount);
   }
 }

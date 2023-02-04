@@ -66,6 +66,18 @@ describe('Crowdsale', () => {
       expect(await crowdsaleContract.tokenContract()).to.equal(tknContractAddress);
     });
   });
+
+  describe('Buying Tokens', () => {
+    const purchaseQty = Convert.TokensToWei('10');
+
+    describe('success', () => {
+      it('transfers tokens', async () => {
+        const trx = await crowdsaleContract.connect(user1).buyTokens(purchaseQty);
+        await trx.wait();
+
+        expect(await tokenContract.balanceOf(crwdContractAddress)).of.equal(Convert.TokensToWei('999990'));
+        expect(await tokenContract.balanceOf(user1Address)).of.equal(purchaseQty);
+      });
     });
   });
 })
