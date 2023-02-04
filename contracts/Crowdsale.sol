@@ -9,10 +9,12 @@ struct CrwdSaleDeploymentArgs {
 
 contract Crowdsale {
   string public name = "Crowdsale";
-  Token public tknContractAddress;
+  Token public tokenContract;
 
   // Save address to Token Contract
   constructor(CrwdSaleDeploymentArgs memory args) {
-    tknContractAddress = args._tokenContractAddress;
+    // Integrate tknContract via address assignment
+    tokenContract = args._tokenContractAddress;
+  }
   }
 }
