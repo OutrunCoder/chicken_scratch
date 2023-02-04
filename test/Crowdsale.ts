@@ -11,6 +11,12 @@ describe('Crowdsale', () => {
   //
   let accounts: Array<any>;
   let deployer: any;
+  let user1: any;
+  //
+  let deployerAddress: string;
+  let user1Address: string;
+  let tknContractAddress: string;
+  let crwdContractAddress: string;
   
   beforeEach(async() => {
     // Load contracts
@@ -24,21 +30,25 @@ describe('Crowdsale', () => {
       _decimals: 18,
       _totalSupply: tokenTotalSupply
     });
+    tknContractAddress = tokenContract.address;
 
     // B
     crowdsaleContract = await crwdSaleContractFactory.deploy({
       _tokenContractAddress: tokenContract.address
     });
+    crwdContractAddress = crowdsaleContract.address;
 
     // Collect Accounts
     accounts = await ethers.getSigners();
     // ACTORS
     [
       deployer,
+      user1
     ] = accounts;
+    user1Address = user1.address;
 
     // xfer tokens to ICO
-    const tokenHandoff = await tokenContract.connect(deployer).transfer(crowdsaleContract.address, tokenTotalSupplyInWei);
+    const tokenHandoff = await tokenContract.connect(deployer).transfer(crwdContractAddress, tokenTotalSupplyInWei);
     await tokenHandoff.wait();
   });
 
@@ -48,12 +58,12 @@ describe('Crowdsale', () => {
     });
 
     it('sends tokens to the Crowdsale contract', async() => {
-      const initialCrwdSaleTknBalance = tokenContract.balanceOf(crowdsaleContract.address);
+      const initialCrwdSaleTknBalance = tokenContract.balanceOf(crwdContractAddress);
       expect(await initialCrwdSaleTknBalance).to.equal(tokenTotalSupplyInWei);
     });
 
     it('returns the Token address', async () => {
-      expect(await crowdsaleContract.tokenContract()).to.equal(tokenContract.address);
+      expect(await crowdsaleContract.tokenContract()).to.equal(tknContractAddress);
     });
   });
     });
