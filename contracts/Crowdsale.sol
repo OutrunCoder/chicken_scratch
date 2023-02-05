@@ -27,11 +27,11 @@ contract Crowdsale {
   }
 
   function buyTokens(uint256 _amount) public payable {
-    // Provides the correct amount of ETH
+    // correct amount of ETH was provided for sale
     require(msg.value == (_amount / 1e18) * price, 'Sender did not provide the correct amount of ETH');
     // ICO has enough tokens for purchase amount
-    require(tokenContract.balanceOf(address(this)) >= _amount, 'Insufficent token balance for purchase amount');
-    // ETH is transfered to ICO balance
+    require(tokenContract.balanceOf(address(this)) >= _amount, 'Insufficent token STOCK balance for purchase amount');
+    // transfer ETH to ICO balance
     require(tokenContract.transfer(msg.sender, _amount), 'Failed to transfer tokens to ICO');
 
     emit TokenPurchase(_amount, msg.sender);
