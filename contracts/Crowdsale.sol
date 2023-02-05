@@ -37,6 +37,12 @@ contract Crowdsale {
   }
   // fallback() // ! << See docs
 
+  // TODO - ? UTIL FUNCTIONS IN SOLIDITY ?
+  // function tokensRemaining() public {
+  //   uint256 balance = tokenContract.balanceOf(address(this));
+  //   return (balance);
+  // }
+
   function buyTokens(uint256 _amount) public payable {
     // correct amount of ETH was provided for sale
     require(msg.value == (_amount / 1e18) * price, 'Sender did not provide the correct amount of ETH');
