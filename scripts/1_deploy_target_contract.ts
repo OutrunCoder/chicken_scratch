@@ -1,4 +1,6 @@
-// ! DYNAMIC DEPLOYMENT OF TARGET CONTRACT
+// ! DYNAMIC DEPLOYMENT OF TARGET CONTRACT - W2 Token Contract Creation
+// First working implementation of contract deployment
+// DOCS - https://hardhat.org/hardhat-runner/docs/getting-started#connecting-a-wallet-or-dapp-to-hardhat-network
 
 import { ethers } from "hardhat";
 
