@@ -11,6 +11,7 @@ struct CrwdSaleDeploymentArgs {
 
 contract Crowdsale {
   string public name = "Crowdsale";
+  address public owner;
   //
   Token public tokenContract;
   uint256 public maxTokens;
@@ -25,6 +26,8 @@ contract Crowdsale {
 
   // Save address to Token Contract
   constructor(CrwdSaleDeploymentArgs memory args) {
+    owner = msg.sender;
+    // - OR specify some arbitrary address for security
     // Integrate tknContract via address assignment
     tokenContract = args._tokenContractAddress;
     maxTokens = args._maxTokens;
@@ -53,5 +56,12 @@ contract Crowdsale {
 
     tokensSold += _amount;
     emit TokenPurchase(_amount, msg.sender);
+  }
+
+  function  finalize() public {
+    // todo - Confirm dates and parameters
+    // Send remaining tokens to creator
+    uint256 remainingTokens = tokenContract.balanceOf(address(this));
+    require(tokenContract.transfer(owner, remainingTokens));
   }
 }

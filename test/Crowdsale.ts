@@ -13,7 +13,7 @@ describe('Crowdsale', () => {
   let deployer: any;
   let user1: any;
   //
-  // let deployerAddress: string;
+  let deployerAddress: string;
   let user1Address: string;
   let tknContractAddress: string;
   let crwdContractAddress: string;
@@ -47,7 +47,7 @@ describe('Crowdsale', () => {
       deployer,
       user1
     ] = accounts;
-    // deployerAddress = deployer.address;
+    deployerAddress = deployer.address;
     user1Address = user1.address;
 
     // xfer tokens to ICO
@@ -178,4 +178,30 @@ describe('Crowdsale', () => {
 
     });
   });
+
+  describe('Finalizing Sale', () => {
+    let trx: any;
+    let finalization: any;
+    // let trxResult: any;
+    let finResult: any;
+    const purchaseAmount = Convert.TokensToWei('4000');
+    const purchasePrice_ETH = Convert.TokensToWei('20');
+
+    describe('Success', () => {
+      beforeEach(async() => {
+        // DRAIN
+        trx = await crowdsaleContract.connect(user1).buyTokens(purchaseAmount, { value: purchasePrice_ETH });
+        // trxResult =
+        await trx.wait();
+
+        // CLOSE
+        finalization = await crowdsaleContract.connect(deployer).finalize();
+        finResult = await finalization.wait();
+      });
+
+      it('should transfer remaining tokens to owner', async () => {
+        expect(await tokenContract.balanceOf(crwdContractAddress)).to.equal(0);
+        expect(await tokenContract.balanceOf(deployerAddress)).to.equal(Convert.TokensToWei('996000'));
+      });
+    });
 })
