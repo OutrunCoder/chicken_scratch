@@ -179,6 +179,29 @@ describe('Crowdsale', () => {
     });
   });
 
+  describe('Updating Price', () => {
+    let trx: any;
+    let newPrice = Convert.TokensToWei('.05') // ! PRICE ADJUST HERE
+
+    describe('Success', () => {
+      beforeEach(async() => {
+        trx = await crowdsaleContract.connect(deployer).setPrice(newPrice);
+        await trx.wait();
+      });
+
+      it('updates the price', async() => {
+        expect(await crowdsaleContract.price()).to.equal(newPrice);
+      });
+    })
+
+    describe('Failure', () => {
+      it('prevents non-owner from updating price', async() => {
+        // await crowdsaleContract.connect(user1).setPrice(newPrice);
+        await expect(crowdsaleContract.connect(user1).setPrice(newPrice)).to.be.reverted;
+      });
+    });
+  });
+
   describe('Finalizing Sale', () => {
     let trx: any;
     let finalization: any;

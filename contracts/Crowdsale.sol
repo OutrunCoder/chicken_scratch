@@ -66,6 +66,10 @@ contract Crowdsale {
     emit TokenPurchase(_amount, msg.sender);
   }
 
+  function setPrice(uint256 _newPrice) public onlyOwner {
+    price = _newPrice;
+  }
+
   function  finalize() public onlyOwner {
     // todo - Confirm dates and parameters
     // Send remaining tokens to creator
