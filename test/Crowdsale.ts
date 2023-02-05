@@ -13,7 +13,7 @@ describe('Crowdsale', () => {
   let deployer: any;
   let user1: any;
   //
-  let deployerAddress: string;
+  // let deployerAddress: string;
   let user1Address: string;
   let tknContractAddress: string;
   let crwdContractAddress: string;
@@ -35,6 +35,7 @@ describe('Crowdsale', () => {
     // B
     crowdsaleContract = await crwdSaleContractFactory.deploy({
       _tokenContractAddress: tknContractAddress,
+      _maxTokens: tokenTotalSupply,
       _price: Convert.TokensToWei('.005') // ! REQUIRES PRICE ADJUSTMENTS BELOW >>>
     });
     crwdContractAddress = crowdsaleContract.address;
@@ -46,7 +47,7 @@ describe('Crowdsale', () => {
       deployer,
       user1
     ] = accounts;
-    deployerAddress = deployer.address;
+    // deployerAddress = deployer.address;
     user1Address = user1.address;
 
     // xfer tokens to ICO
@@ -93,6 +94,10 @@ describe('Crowdsale', () => {
         const crwdSaleContractEthersBalance = await ethers.provider.getBalance(crwdContractAddress);
         expect(crwdSaleContractEthersBalance).to.equal(purchasePrice_ETH);
       })
+
+      it('updates tokensSold', async() => {
+        expect(await crowdsaleContract.tokensSold()).to.equal(purchaseAmount);
+      });
 
       it('emits a purchase event', async() => {
         // console.log('>> PURCHASE:\n', trxResult.events[1].args);

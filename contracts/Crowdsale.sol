@@ -4,14 +4,19 @@ pragma solidity ^0.8.0;
 import "./Token.sol";
 
 struct CrwdSaleDeploymentArgs {
-  uint256 _price;
   Token _tokenContractAddress;
+  uint256 _maxTokens;
+  uint256 _price;
 }
 
 contract Crowdsale {
   string public name = "Crowdsale";
+  //
   Token public tokenContract;
+  uint256 public maxTokens;
   uint256 public price;
+  //
+  uint256 public tokensSold;
 
   event TokenPurchase(
     uint256 amount,
@@ -22,8 +27,8 @@ contract Crowdsale {
   constructor(CrwdSaleDeploymentArgs memory args) {
     // Integrate tknContract via address assignment
     tokenContract = args._tokenContractAddress;
+    maxTokens = args._maxTokens;
     price = args._price;
-
   }
 
   function buyTokens(uint256 _amount) public payable {
@@ -34,6 +39,7 @@ contract Crowdsale {
     // transfer ETH to ICO balance
     require(tokenContract.transfer(msg.sender, _amount), 'Failed to transfer tokens to ICO');
 
+    tokensSold += _amount;
     emit TokenPurchase(_amount, msg.sender);
   }
 }
