@@ -23,6 +23,9 @@ contract Crowdsale {
     uint256 amount,
     address purchaser
   );
+  event Finalize(
+    uint256 tokensSold, uint256 ethRaised
+  );
 
   // Save address to Token Contract
   constructor(CrwdSaleDeploymentArgs memory args) {
@@ -65,9 +68,11 @@ contract Crowdsale {
     require(tokenContract.transfer(owner, remainingTokens));
 
     // Send ETH to creator
-    uint256 storedValue = address(this).balance;
+    uint256 ethRaised = address(this).balance;
     // (bool sent, bytes data) =
-    ( bool sent, ) = owner.call{ value: storedValue }("");
+    ( bool sent, ) = owner.call{ value: ethRaised }("");
     require(sent);
+
+    emit Finalize(tokensSold, ethRaised);
   }
 }

@@ -208,5 +208,10 @@ describe('Crowdsale', () => {
       it('transfers ETH balance to owner', async() => {
         expect(await ethers.provider.getBalance(crwdContractAddress)).to.equal(0);
       });
+
+      it('emits Finalize event', async() => {
+        await expect(finalization).to.emit(crowdsaleContract, 'Finalize')
+          .withArgs(purchaseAmount, purchasePrice_ETH);
+      });
     });
 })
