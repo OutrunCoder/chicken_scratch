@@ -62,6 +62,7 @@ contract Crowdsale {
   }
 
   function  finalize() public {
+    require(msg.sender == owner);
     // todo - Confirm dates and parameters
     // Send remaining tokens to creator
     uint256 remainingTokens = tokenContract.balanceOf(address(this));

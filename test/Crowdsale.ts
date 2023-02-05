@@ -214,4 +214,11 @@ describe('Crowdsale', () => {
           .withArgs(purchaseAmount, purchasePrice_ETH);
       });
     });
+
+    describe('Failure', () => {
+      it('prevents non-owner from finalizing', async() => {
+        await expect(crowdsaleContract.connect(user1).finalize()).to.be.reverted;
+      });
+    });
+  });
 })
