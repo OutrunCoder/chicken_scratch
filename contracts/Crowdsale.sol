@@ -63,5 +63,11 @@ contract Crowdsale {
     // Send remaining tokens to creator
     uint256 remainingTokens = tokenContract.balanceOf(address(this));
     require(tokenContract.transfer(owner, remainingTokens));
+
+    // Send ETH to creator
+    uint256 storedValue = address(this).balance;
+    // (bool sent, bytes data) =
+    ( bool sent, ) = owner.call{ value: storedValue }("");
+    require(sent);
   }
 }
