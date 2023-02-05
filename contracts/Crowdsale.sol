@@ -31,6 +31,12 @@ contract Crowdsale {
     price = args._price;
   }
 
+  receive() external payable {
+    uint256 amount = msg.value / price;
+    buyTokens(amount * 1e18);
+  }
+  // fallback() // ! << See docs
+
   function buyTokens(uint256 _amount) public payable {
     // correct amount of ETH was provided for sale
     require(msg.value == (_amount / 1e18) * price, 'Sender did not provide the correct amount of ETH');

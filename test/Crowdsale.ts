@@ -131,4 +131,51 @@ describe('Crowdsale', () => {
       });
     });
   });
+
+  describe('Sending ETH', () => {
+    let trx: any;
+    // let trxResult: any;
+    // ! PRICE ADJUST HERE
+    const expectedTokesToBeReceived = Convert.TokensToWei('2000');
+    const ETHsentAmount = Convert.TokensToWei('10');
+
+    describe('Success', () => {
+      beforeEach(async() => {
+        trx = await user1.sendTransaction({ to: crwdContractAddress, value: ETHsentAmount });
+        await trx.wait();
+      });
+
+      it('updates contracts ether balance', async () => {
+        const crwdSaleContractEthersBalance = await ethers.provider.getBalance(crwdContractAddress);
+        expect(crwdSaleContractEthersBalance).to.equal(ETHsentAmount);
+      })
+
+      it('updates user1 token balance', async() => {
+        expect(await tokenContract.balanceOf(user1Address)).to.equal(expectedTokesToBeReceived);
+      });
+
+      it('updates tokensSold', async() => {
+        const tokensSold = await crowdsaleContract.tokensSold();
+        //
+        const ICOmaxSupply = Convert.WeiToTokens(Convert.TokensToWei(await crowdsaleContract.maxTokens()));
+        const takenSupply = Convert.WeiToTokens(expectedTokesToBeReceived);
+        const remaining = parseInt(ICOmaxSupply) - parseInt(takenSupply);
+        const calculatedSupply = remaining + parseInt(takenSupply);
+        const allAddsUp = calculatedSupply === tokenTotalSupply;
+
+        console.log('ICOmaxSupply', ICOmaxSupply);
+        console.log('takenSupply', takenSupply);
+        console.log('remaining', remaining);
+        console.log('calculatedSupply', calculatedSupply);
+        console.log('ALL ADDS UP!', allAddsUp);
+        
+        expect(tokensSold).to.equal(expectedTokesToBeReceived);
+        // Comparing Distribution
+        expect(parseInt(Convert.WeiToTokens(tokensSold))).to.equal(parseInt(ICOmaxSupply) - remaining);
+        // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+        expect(allAddsUp).to.be.true;
+      });
+
+    });
+  });
 })
