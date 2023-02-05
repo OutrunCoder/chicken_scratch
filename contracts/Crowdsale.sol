@@ -61,8 +61,12 @@ contract Crowdsale {
     emit TokenPurchase(_amount, msg.sender);
   }
 
-  function  finalize() public {
+  modifier onlyOwner() {
     require(msg.sender == owner);
+    _;
+  }
+
+  function  finalize() public onlyOwner {
     // todo - Confirm dates and parameters
     // Send remaining tokens to creator
     uint256 remainingTokens = tokenContract.balanceOf(address(this));
