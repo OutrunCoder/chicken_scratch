@@ -37,6 +37,11 @@ contract Crowdsale {
     price = args._price;
   }
 
+  modifier onlyOwner() {
+    require(msg.sender == owner, 'caller must be owner');
+    _; // This line represent the function body of the method consuming this modifier
+  }
+
   receive() external payable {
     uint256 amount = msg.value / price;
     buyTokens(amount * 1e18);
@@ -59,11 +64,6 @@ contract Crowdsale {
 
     tokensSold += _amount;
     emit TokenPurchase(_amount, msg.sender);
-  }
-
-  modifier onlyOwner() {
-    require(msg.sender == owner);
-    _;
   }
 
   function  finalize() public onlyOwner {

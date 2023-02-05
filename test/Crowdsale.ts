@@ -217,6 +217,7 @@ describe('Crowdsale', () => {
 
     describe('Failure', () => {
       it('prevents non-owner from finalizing', async() => {
+        // await crowdsaleContract.connect(user1).finalize();
         await expect(crowdsaleContract.connect(user1).finalize()).to.be.reverted;
       });
     });
