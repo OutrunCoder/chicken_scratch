@@ -34,6 +34,7 @@ describe('Crowdsale', () => {
 
     // B
     crowdsaleContract = await crwdSaleContractFactory.deploy({
+      _name: 'Crowdsale',
       _tokenContractAddress: tknContractAddress,
       _maxTokens: tokenTotalSupply,
       _price: Convert.TokensToWei('.005') // ! REQUIRES PRICE ADJUSTMENTS BELOW >>>

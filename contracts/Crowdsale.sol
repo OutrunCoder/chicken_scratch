@@ -4,13 +4,14 @@ pragma solidity ^0.8.0;
 import "./Token.sol";
 
 struct CrwdSaleDeploymentArgs {
+  string _name;
   Token _tokenContractAddress;
   uint256 _maxTokens;
   uint256 _price;
 }
 
 contract Crowdsale {
-  string public name = "Crowdsale";
+  string public name;
   address public owner;
   //
   Token public tokenContract;
@@ -29,6 +30,7 @@ contract Crowdsale {
 
   // Save address to Token Contract
   constructor(CrwdSaleDeploymentArgs memory args) {
+    name = args._name;
     owner = msg.sender;
     // - OR specify some arbitrary address for security
     // Integrate tknContract via address assignment
