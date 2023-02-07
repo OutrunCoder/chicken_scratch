@@ -1,3 +1,4 @@
+import { ethers } from "hardhat";
 import Convert from "../utils/token-conversion";
 // STAGE 0
 // - accept custom params - via main
@@ -5,14 +6,16 @@ import Convert from "../utils/token-conversion";
 
 // - establish a deployment series config w/ meta
 export const tokenTotalSupply = 1000000;
-export const contractConfigs = {
+export const contractConfigs: any = {
   'TOKEN_ASSET_MANAGER': {
+    fileName: 'Token',
     _name: 'Chicken Scratch',
     _symbol: 'SCRATCH',
     _decimals: 18,
     _totalSupply: tokenTotalSupply
   },
   'ICO_SALE_MANAGER': {
+    fileName: 'Crowdsale',
     _name: 'Crowdsale',
     // _tokenContractAddress: 'TBD', // !
     _maxTokens: tokenTotalSupply,
@@ -23,17 +26,26 @@ export const contractConfigs = {
 const deploymentSchedule = {
   stages: [
     'DEPLOY-TOKEN_ASSET_MANAGER',
-    'DEPLOY-ICO_SALE_MANAGER',
+    'DEPLOY-ICO_SALE_MANAGER-PULL_PREV_ADDRESS',
     'INITIALIZE-ICO_SALE'
   ]
 }
+
+// TODO -  find type
+const generateContract = async(target: any): Promise<any> => {
+  const targetConfig = contractConfigs[target];
+  const contractFactory = await ethers.getContractFactory(targetConfig.fileName);
+  const contract = await contractFactory.deploy(targetConfig);
+  await contract.deployed();
+  return contract;
+};
 
 // STAGE 1
 // - collect contract configs
 const deploymentReport = deploymentSchedule.stages.reduce((finalized, currentStage) => {
   // - reduce on stage serries
   let contract;
-  const [action, target] = currentStage.split('-');
+  const [action, target, subAction] = currentStage.split('-');
 
   if (action === 'DEPLOY') {
     // - Deploy w/ config params
