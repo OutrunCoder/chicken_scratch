@@ -5,6 +5,7 @@ import Convert from "../utils/token-conversion";
 
 // - establish a deployment series config w/ meta
 export const tokenTotalSupply = 1000000;
+export const tokenTotalSupplyInWei = Convert.TokensToWei(tokenTotalSupply.toString());
 export const contractConfigs: any = {
   'TOKEN_ASSET_MANAGER': {
     fileName: 'Token',
@@ -24,21 +25,48 @@ export const contractConfigs: any = {
 //
 
 // TODO -  find type
-const generateContract = async(target: string): Promise<any> => {
-  const targetConfig = contractConfigs[target];
+const generateContract = async(target: string, supplementConfig: any): Promise<any> => {
+  let targetConfig = contractConfigs[target];
+  if (supplementConfig) {
+    targetConfig = {
+      ...targetConfig,
+      ...supplementConfig
+    }
+  }
   const contractFactory = await ethers.getContractFactory(targetConfig.fileName);
+  
+  console.log(`>> DEPLOYING: ${target} >>`);
+  console.table(targetConfig);
   const contract = await contractFactory.deploy(targetConfig);
   await contract.deployed();
   return contract;
 };
 
-// STAGE 1 - DEPLOY TOKEN
-
-// STAGE 2 - DEPLOY ICO
+async function main(): Promise<void> {
+  // STAGE 1 - DEPLOY TOKEN
+  const tokenContract = await generateContract('TOKEN_ASSET_MANAGER', null);
+  console.log(`>> TOKEN ASSET MANAGER DEPLOYED TO: ${tokenContract.address}\n`);
+  
+  // STAGE 2 - DEPLOY ICO
+  const crowdsaleContract = await generateContract('ICO_SALE_MANAGER', {
+    _tokenContractAddress: tokenContract.address
+  });
+  console.log(`>> ICO SALE MANAGER DEPLOYED TO: ${crowdsaleContract.address}\n`);
 
 // STAGE 3 - INITIALIZE SALE
-// - Call Business logic on contracts if required
-// - confirm business logic has been executed
+  const saleInitialization = await tokenContract.transfer(crowdsaleContract.address, tokenTotalSupplyInWei);
+  await saleInitialization.wait();
+
+  console.log('>> SCRATCH SALE HAS STARTED! BA-GOK!!!');
+  
+}
+
+main()
+  .then(() => process.exit(0))
+  .catch((error) => {
+    console.error(error);
+    process.exit(1);
+  });
 
 // - create shell script
 // - create/add documentation
