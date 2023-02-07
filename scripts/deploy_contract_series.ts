@@ -3,7 +3,6 @@ import Convert from "../utils/token-conversion";
 // STAGE 0
 // - accept custom params - via main
 
-
 // - establish a deployment series config w/ meta
 export const tokenTotalSupply = 1000000;
 export const contractConfigs: any = {
@@ -23,16 +22,9 @@ export const contractConfigs: any = {
   }
 };
 //
-const deploymentSchedule = {
-  stages: [
-    'DEPLOY-TOKEN_ASSET_MANAGER',
-    'DEPLOY-ICO_SALE_MANAGER-PULL_PREV_ADDRESS',
-    'INITIALIZE-ICO_SALE'
-  ]
-}
 
 // TODO -  find type
-const generateContract = async(target: any): Promise<any> => {
+const generateContract = async(target: string): Promise<any> => {
   const targetConfig = contractConfigs[target];
   const contractFactory = await ethers.getContractFactory(targetConfig.fileName);
   const contract = await contractFactory.deploy(targetConfig);
@@ -40,34 +32,11 @@ const generateContract = async(target: any): Promise<any> => {
   return contract;
 };
 
-// STAGE 1
-// - collect contract configs
-const deploymentReport = deploymentSchedule.stages.reduce((finalized, currentStage) => {
-  // - reduce on stage serries
-  let contract;
-  const [action, target, subAction] = currentStage.split('-');
+// STAGE 1 - DEPLOY TOKEN
 
-  if (action === 'DEPLOY') {
-    // - Deploy w/ config params
+// STAGE 2 - DEPLOY ICO
 
-  }
-  if (action === 'INITIALIZE') {
-
-  }
-  // - confirm address via console
-
-  // continue
-  // return {
-  //   ...deployed,
-  //   [deploying.type]: {
-  //     ...deploying,
-  //     contract
-  //   } 
-  // }
-}, {});
-
-  // next...
-// STAGE 3
+// STAGE 3 - INITIALIZE SALE
 // - Call Business logic on contracts if required
 // - confirm business logic has been executed
 
