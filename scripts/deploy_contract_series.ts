@@ -68,5 +68,4 @@ main()
     process.exit(1);
   });
 
-// - create shell script
-// - create/add documentation
+// TODO - create/add documentation

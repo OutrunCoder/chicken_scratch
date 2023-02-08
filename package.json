@@ -29,7 +29,8 @@
     "test": "react-scripts test",
     "test:contracts": "npx hardhat test",
     "eject": "react-scripts eject",
-    "start:hardhat-node": "npx hardhat node"
+    "start:hardhat-node": "npx hardhat node",
+    "deploy:contract-series": "npx hardhat run scripts/deploy_contract_series.ts --network localhost"
   },
   "eslintConfig": {
     "extends": [
