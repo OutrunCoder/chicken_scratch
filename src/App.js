@@ -6,6 +6,7 @@ import { Container } from 'react-bootstrap';
 import { ethers } from 'ethers';
 
 import Navigation from './components/navigation';
+import Info from './components/info';
 
 //
 
@@ -38,8 +39,7 @@ function App() {
         <header className="App-header">
 
           <Navigation/>
-
-          <div>{account}</div>
+          <Info account={account}/>
 
           <img src={logo} className="App-logo" alt="logo" />
           <p>
