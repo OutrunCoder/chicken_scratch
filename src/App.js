@@ -39,7 +39,9 @@ function App() {
         <header className="App-header">
 
           <Navigation/>
-          <Info account={account}/>
+          {account && (
+            <Info account={account}/>
+          )}
 
           <img src={logo} className="App-logo" alt="logo" />
           <p>
