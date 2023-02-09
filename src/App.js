@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import './App.css';
 import logo from './logo.svg';
 
@@ -13,13 +13,19 @@ import Navigation from './components/navigation';
 
 function App() {
 
+  const [account, setAccount] = useState(null);
+
+  // 
+
   const loadBlockchainData = async () => {
     const provider = new ethers.providers.Web3Provider(window.ethereum);
     console.log('>> PROVIDER:', provider);
 
     const accounts = await window.ethereum.request({ method: 'eth_requestAccounts'});
-    const account = ethers.utils.getAddress(accounts[0]);
-    console.log('>> ACCOUTNS:', account);
+    const accountAddress = ethers.utils.getAddress(accounts[0]);
+    console.log('>> ACCOUTNS:', accountAddress);
+
+    setAccount(accountAddress);
   };
 
   useEffect(() => {
@@ -32,6 +38,8 @@ function App() {
         <header className="App-header">
 
           <Navigation/>
+
+          <div>{account}</div>
 
           <img src={logo} className="App-logo" alt="logo" />
           <p>
