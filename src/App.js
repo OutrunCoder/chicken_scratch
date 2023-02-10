@@ -35,6 +35,10 @@ function App() {
   //
   const [account, setAccount] = useState(null);
   const [accountBalance, setAccountBalance] = useState(0);
+  //
+  const [price, setPrice] = useState(0);
+  const [maxTokens, setMaxTokens] = useState(0);
+  const [tokensSold, setTokensSold] = useState(0);
   // 
   const [isLoading, setIsLoading] = useState(true);
 
@@ -61,6 +65,12 @@ function App() {
     setAccount(userAccountAddress);
     setAccountBalance(accountBalance);
 
+    // ICO STATE DETAILS
+    setPrice(ethers.utils.formatUnits(await crowdsaleContract.price(), 18));
+    setMaxTokens(ethers.utils.formatUnits(await crowdsaleContract.maxTokens(), 18));
+    setTokensSold(ethers.utils.formatUnits(await crowdsaleContract.tokensSold(), 18));
+
+    // DONE !
     setIsLoading(false);
   };
 
@@ -76,6 +86,13 @@ function App() {
         <header className="App-header">
 
           <Navigation/>
+
+          {isLoading ? (
+            <p>Loading...</p>
+          ) : (
+            <p><strong>Current Price:</strong> {price} ETH</p>
+          )} 
+
           {account && (
             <Info account={account} accountBalance={accountBalance}/>
           )}
