@@ -15,3 +15,4 @@ npx hardhat run scripts/deploy.ts
 - [ ] TODO - CREATE a shell script to automate the ABI collection from completed contracts
 - [ ] TODO - CREATE a shell script to collect local addresses of the contracts
 - [ ] TODO - CREATE a web3 module export config
+- [ ] TODO - CONSOLI acct details into a user type interface

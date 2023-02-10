@@ -32,7 +32,9 @@ function App() {
   // !  STATE MANAGEMENT
   const [provider, setProvider] = useState(null);
   const [crowdContract, setCrowdContract] = useState(null);
+  //
   const [account, setAccount] = useState(null);
+  const [accountBalance, setAccountBalance] = useState(0);
   // 
   const [isLoading, setIsLoading] = useState(true);
 
@@ -55,8 +57,9 @@ function App() {
 
     // ! CURRENT USER
     const accountBalance = ethers.utils.formatUnits(await tokenContract.balanceOf(userAccountAddress), 18);
-    console.log('>> USER HAS THIS MANY TOKENS:', accountBalance);
+    // console.log('>> USER HAS THIS MANY TOKENS:', accountBalance);
     setAccount(userAccountAddress);
+    setAccountBalance(accountBalance);
 
     setIsLoading(false);
   };
@@ -74,7 +77,7 @@ function App() {
 
           <Navigation/>
           {account && (
-            <Info account={account}/>
+            <Info account={account} accountBalance={accountBalance}/>
           )}
 
           <img src={logo} className="App-logo" alt="logo" />
