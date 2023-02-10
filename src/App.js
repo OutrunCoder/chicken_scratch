@@ -13,6 +13,7 @@ import { ethers } from 'ethers';
 // components
 import Navigation from './components/navigation';
 import Info from './components/info';
+import LoadingStatus from './components/loading-status';
 
 // ABIs
 import TOKEN_ABI from './web3-config/abis/Token.json';
@@ -88,7 +89,7 @@ function App() {
           <Navigation/>
 
           {isLoading ? (
-            <p>Loading...</p>
+            <LoadingStatus/>
           ) : (
             <p><strong>Current Price:</strong> {price} ETH</p>
           )} 
