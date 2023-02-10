@@ -29,7 +29,9 @@ function App() {
   console.log('>> WORKING CONFIGS:');
   console.table({tknConfig, crwdSacrwdSlConfig});
   
+  // !  STATE MANAGEMENT
   const [provider, setProvider] = useState(null);
+  const [crowdContract, setCrowdContract] = useState(null);
   const [account, setAccount] = useState(null);
   // 
   const [isLoading, setIsLoading] = useState(true);
@@ -43,14 +45,18 @@ function App() {
     // Initiate contracts
     const tokenContract = new ethers.Contract(tknConfig.address, TOKEN_ABI, _provider);
     const crowdsaleContract = new ethers.Contract(crwdSacrwdSlConfig.address, CROWDSALE_ABI, _provider);
+    setCrowdContract(crowdsaleContract);
     // console.log('>> TOKEN CONTRACT:', tokenContract);
 
-    // Set Account
+    // Collect Account
     const accounts = await window.ethereum.request({ method: 'eth_requestAccounts'});
-    const accountAddress = ethers.utils.getAddress(accounts[0]);
-    console.log('>> ACCOUTNS:', accountAddress);
+    const userAccountAddress = ethers.utils.getAddress(accounts[0]);
+    console.log('>> USER ACCOUNT ADDRESS:', userAccountAddress);
 
-    setAccount(accountAddress);
+    // ! CURRENT USER
+    const accountBalance = ethers.utils.formatUnits(await tokenContract.balanceOf(userAccountAddress), 18);
+    console.log('>> USER HAS THIS MANY TOKENS:', accountBalance);
+    setAccount(userAccountAddress);
 
     setIsLoading(false);
   };
