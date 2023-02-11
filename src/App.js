@@ -15,6 +15,7 @@ import Navigation from './components/navigation';
 import Info from './components/info';
 import LoadingStatus from './components/loading-status';
 import Progress from './components/progress';
+import BuyTokens from './components/form-buy-tokens';
 
 // ABIs
 import TOKEN_ABI from './web3-config/abis/Token.json';
@@ -96,6 +97,7 @@ function App() {
           ) : (
             <>
               <p><strong>Current Price:</strong> {price} ETH</p>
+              <BuyTokens provider={provider} price={price} crowdContract={crowdContract} setIsLoading={setIsLoading}/>
               <Progress maxTokens={maxTokens} tokensSold={tokensSold}/>
             </>
           )} 
