@@ -1,13 +1,20 @@
+// FW
 import { useState } from "react";
+// libs
+import { ethers } from "ethers";
 import { Button, Form, Row } from "react-bootstrap";
 
 const BuyTokens = ({ provider, price, crowdContract, setIsLoading }) => {
   const [purchaseQty, setPurchaseQty] = useState('0');
 
-
   const buyHandler = async(e) => {
     e.preventDefault();
     console.log(`>> BUYING ${purchaseQty} TOKENS...`);
+    const signer = await provider.getSigner();
+    const ethValue = ethers.utils.parseUnits((purchaseQty * price).toString(), 'ether');
+    const formattedPurhcaseQty = ethers.utils.parseUnits(purchaseQty.toString(), 'ether');
+    const transaction = await crowdContract.connect(signer).buyTokens(formattedPurhcaseQty, { value: ethValue });
+    await transaction.wait();
   };
 
   return (

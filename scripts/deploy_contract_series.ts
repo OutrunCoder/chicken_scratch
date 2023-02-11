@@ -18,8 +18,8 @@ export const contractConfigs: any = {
     fileName: 'Crowdsale',
     _name: 'Crowdsale',
     // _tokenContractAddress: 'TBD', // !
-    _maxTokens: tokenTotalSupply,
-    // _maxTokens: ethers.utils.parseUnits('1000000', 'ether'), // NOTE - FROM VIDEO DEMONSTRATED <<
+    // _maxTokens: tokenTotalSupply,
+    _maxTokens: ethers.utils.parseUnits('1000000', 'ether'), // NOTE - FROM VIDEO DEMONSTRATED <<
     _price: Convert.TokensToWei('.005')
   }
 };
