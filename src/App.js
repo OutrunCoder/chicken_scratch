@@ -89,6 +89,8 @@ function App() {
 
           <Navigation/>
 
+          <h1 className='my-4'>Introducing Chicken Scratch! Ba-gok!!!</h1>
+
           {isLoading ? (
             <LoadingStatus/>
           ) : (
@@ -117,7 +119,6 @@ function App() {
         </header>
       </div>
     </Container>
-
   );
 }
 
