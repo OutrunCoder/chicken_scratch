@@ -14,11 +14,17 @@ const BuyTokens = ({ provider, price, crowdContract, setIsLoading }) => {
 
     setIsWaiting(true);
 
-    const signer = await provider.getSigner();
-    const ethValue = ethers.utils.parseUnits((purchaseQty * price).toString(), 'ether');
-    const formattedPurhcaseQty = ethers.utils.parseUnits(purchaseQty.toString(), 'ether');
-    const transaction = await crowdContract.connect(signer).buyTokens(formattedPurhcaseQty, { value: ethValue });
-    await transaction.wait();
+    try {
+      const signer = await provider.getSigner();
+      const ethValue = ethers.utils.parseUnits((purchaseQty * price).toString(), 'ether');
+      const formattedPurhcaseQty = ethers.utils.parseUnits(purchaseQty.toString(), 'ether');
+      const transaction = await crowdContract.connect(signer).buyTokens(formattedPurhcaseQty, { value: ethValue });
+      await transaction.wait();
+
+    } catch(err) {
+      console.error('(!) laid a bad egg (!):', err);
+      window.alert('User rejected or transaction reverted');
+    }
 
     setIsLoading(true);
   };
