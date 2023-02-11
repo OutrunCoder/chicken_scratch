@@ -63,6 +63,8 @@ describe('Crowdsale', () => {
 
     it('sends tokens to the Crowdsale contract', async() => {
       const initialCrwdSaleTknBalance = tokenContract.balanceOf(crwdContractAddress);
+      // console.log('>> CRWD SALE TOKEN BALANCE:', Convert.WeiToTokens(await initialCrwdSaleTknBalance));
+      
       expect(await initialCrwdSaleTknBalance).to.equal(tokenTotalSupplyInWei);
     });
 
@@ -158,6 +160,8 @@ describe('Crowdsale', () => {
       it('updates tokensSold', async() => {
         const tokensSold = await crowdsaleContract.tokensSold();
         //
+        // console.log('>> !! MAX TKS ON ICO:', Convert.TokensToWei(await crowdsaleContract.maxTokens()));
+        
         const ICOmaxSupply = Convert.WeiToTokens(Convert.TokensToWei(await crowdsaleContract.maxTokens()));
         const takenSupply = Convert.WeiToTokens(expectedTokesToBeReceived);
         const remaining = parseInt(ICOmaxSupply) - parseInt(takenSupply);

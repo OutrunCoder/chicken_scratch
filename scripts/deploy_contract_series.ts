@@ -19,6 +19,7 @@ export const contractConfigs: any = {
     _name: 'Crowdsale',
     // _tokenContractAddress: 'TBD', // !
     _maxTokens: tokenTotalSupply,
+    // _maxTokens: ethers.utils.parseUnits('1000000', 'ether'), // NOTE - FROM VIDEO DEMONSTRATED <<
     _price: Convert.TokensToWei('.005')
   }
 };
@@ -57,7 +58,8 @@ async function main(): Promise<void> {
   const saleInitialization = await tokenContract.transfer(crowdsaleContract.address, tokenTotalSupplyInWei);
   await saleInitialization.wait();
 
-  console.log('>> SCRATCH SALE HAS STARTED! BA-GOK!!!');
+  console.log('>> SCRATCH SALE HAS STARTED! BA-GOK!!!', await tokenContract.balanceOf(crowdsaleContract.address));
+  console.log('>> WITH MAX_TOKENS!!!', await crowdsaleContract.maxTokens());
   
 }
 

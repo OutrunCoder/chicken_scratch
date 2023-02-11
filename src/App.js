@@ -14,6 +14,7 @@ import { ethers } from 'ethers';
 import Navigation from './components/navigation';
 import Info from './components/info';
 import LoadingStatus from './components/loading-status';
+import Progress from './components/progress';
 
 // ABIs
 import TOKEN_ABI from './web3-config/abis/Token.json';
@@ -27,8 +28,8 @@ function App() {
   const networkConfig = contractConfigs['31337'];
   const { token: tknConfig, crowdsale: crwdSacrwdSlConfig } = networkConfig;
 
-  console.log('>> WORKING CONFIGS:');
-  console.table({tknConfig, crwdSacrwdSlConfig});
+  // console.log('>> WORKING CONFIGS:');
+  // console.table({tknConfig, crwdSacrwdSlConfig});
   
   // !  STATE MANAGEMENT
   const [provider, setProvider] = useState(null);
@@ -46,7 +47,7 @@ function App() {
   const loadBlockchainData = async () => {
     // Initiate provider
     const _provider = new ethers.providers.Web3Provider(window.ethereum);
-    console.log('>> PROVIDER:', _provider);
+    // console.log('>> PROVIDER:', _provider);
     setProvider(_provider);
 
     // Initiate contracts
@@ -58,7 +59,7 @@ function App() {
     // Collect Account
     const accounts = await window.ethereum.request({ method: 'eth_requestAccounts'});
     const userAccountAddress = ethers.utils.getAddress(accounts[0]);
-    console.log('>> USER ACCOUNT ADDRESS:', userAccountAddress);
+    // console.log('>> USER ACCOUNT ADDRESS:', userAccountAddress);
 
     // ! CURRENT USER
     const accountBalance = ethers.utils.formatUnits(await tokenContract.balanceOf(userAccountAddress), 18);
@@ -91,7 +92,10 @@ function App() {
           {isLoading ? (
             <LoadingStatus/>
           ) : (
-            <p><strong>Current Price:</strong> {price} ETH</p>
+            <>
+              <p><strong>Current Price:</strong> {price} ETH</p>
+              <Progress maxTokens={maxTokens} tokensSold={tokensSold}/>
+            </>
           )} 
 
           {account && (
